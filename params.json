@@ -1,0 +1,6 @@
+{
+  "name": "filerecorder",
+  "tagline": "I need a tagline",
+  "body": "# FileRecorder\r\n\r\n## Introduction\r\nFile Recorder is a simple wrapper over GIT to allow you to track changes to a folder.\r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
