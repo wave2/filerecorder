@@ -37,13 +37,15 @@ import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Logger;
+
 
 public class FileRecorder {
 
@@ -58,7 +60,7 @@ public class FileRecorder {
     private List<String> arguments = new ArrayList<String>();
 
     //Logger
-    private static final Logger logger = Logger.getLogger(FileRecorder.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(FileRecorder.class.getName());
 
     //Application properties
     private final Properties properties = new Properties();
@@ -113,12 +115,8 @@ public class FileRecorder {
             return;
         }
 
-        // access non-option arguments
-        System.out.println("other arguments are:");
-        for( String s : arguments )
-            System.out.println(s);
-
         //Check the repository
+        logger.info("Looking for changes in " + monitorPath);
         try{
             FileRepositoryBuilder builder = new FileRepositoryBuilder();
             Repository repository = builder.setWorkTree(new File(monitorPath)).setGitDir(new File(repositoryPath, ".git")).build();
@@ -178,8 +176,9 @@ public class FileRecorder {
                 commit.setMessage(commitMessage).call();
             }
             git.close();
+            logger.info("FileRecorder Finished");
         } catch (Exception e){
-            logger.severe(e.getClass().toString() + " - " + e.getMessage());
+            logger.error(e.getClass().toString() + " - " + e.getMessage());
         }
 
     }
