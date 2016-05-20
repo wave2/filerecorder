@@ -1,22 +1,20 @@
 group 'org.wave2.recorder'
+version '0.1.0'
 
 buildscript {
     repositories {
         jcenter()
-        maven {
-            url 'https://plugins.gradle.org/m2/'
-        }}
+        mavenCentral()
+    }
     dependencies {
-        classpath "gradle.plugin.com.palantir.gradle.gitversion:gradle-git-version:0.5.1"
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
+        classpath 'net.researchgate:gradle-release:2.3.4'
     }
 }
 
 apply plugin: 'java'
-apply plugin: "com.palantir.git-version"
 apply plugin: 'com.github.johnrengelman.shadow'
-
-version gitVersion()
+apply plugin: 'net.researchgate.release'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
