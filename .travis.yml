@@ -1,7 +1,7 @@
 language: java
 jdk:
 - oraclejdk8
-install:
+script:
  ./gradlew assemble
 deploy:
   provider: releases
