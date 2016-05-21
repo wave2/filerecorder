@@ -29,6 +29,8 @@ package org.wave2.recorder;
  * either expressed or implied, of Wave2 Limited.
  */
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
 import org.eclipse.jgit.api.*;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
@@ -49,11 +51,14 @@ import java.util.Properties;
 
 public class FileRecorder {
 
-    @Option(name = "-f", usage = "Folder to monitor", metaVar = "Path", required = true)
+    @Option(name = "-f",aliases = { "--folder" }, usage = "Folder to monitor", metaVar = "Path", required = true)
     private String monitorPath;
 
-    @Option(name = "-r", usage = "Repository folder (holds changes detected)", metaVar = "Path", required = true)
+    @Option(name = "-r", aliases = { "--repo" }, usage = "Repository folder (holds changes detected)", metaVar = "Path", required = true)
     private String repositoryPath;
+
+    @Option(name = "-d", aliases = { "--debug" }, usage = "Enable debug messages", required = false)
+    private boolean debugEnabled;
 
     // receives other command line parameters than options
     @Argument
@@ -82,6 +87,7 @@ public class FileRecorder {
      */
     private FileRecorder() {
         loadProperties();
+
     }
 
     public static void main(String[] args) throws IOException {
@@ -108,11 +114,17 @@ public class FileRecorder {
             // an error message.
             System.err.println(e.getMessage() + "\n");
             System.err.println("FileRecorder - lazy version control for your stuff! Version " + properties.getProperty("application.version"));
-            System.err.println("Usage: java -jar FileRecorder.jar [options]");
+            System.err.println("Usage: java -jar fileRecorder.jar -f PATH -r PATH [record]");
             // print the list of available options
             parser.printUsage(System.err);
             System.err.println();
             return;
+        }
+
+        if( debugEnabled ) {
+            LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+            ch.qos.logback.classic.Logger rootLogger = lc.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+            rootLogger.setLevel(Level.DEBUG);
         }
 
         // access non-option arguments
