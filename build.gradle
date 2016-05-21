@@ -44,7 +44,7 @@ jar {
 shadowJar {
     doFirst {clean}
     dependsOn {build}
-    archiveName = 'fileRecorder-' + version + '.jar'
+    archiveName = 'fileRecorder-v' + version + '.jar'
 }
 
 release {
