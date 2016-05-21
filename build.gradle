@@ -46,3 +46,7 @@ shadowJar {
     dependsOn {build}
     archiveName = 'fileRecorder-' + version + '.jar'
 }
+
+release {
+    tagTemplate = 'v${version}'
+}
