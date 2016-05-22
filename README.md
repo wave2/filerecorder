@@ -1,5 +1,6 @@
 fileRecorder
 ============
+![alt fileRecorder Logo](https://raw.githubusercontent.com/wave2/filerecorder/gh-pages/images/fileRecorderLogo.jpg)
 
 Introduction
 ------------
