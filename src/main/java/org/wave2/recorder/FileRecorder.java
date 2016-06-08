@@ -44,9 +44,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 
 public class FileRecorder {
@@ -59,6 +62,9 @@ public class FileRecorder {
 
     @Option(name = "-d", aliases = { "--debug" }, usage = "Enable debug messages", required = false)
     private boolean debugEnabled;
+
+    @Option(name = "-k", aliases = { "--keep" }, usage = "Add .keep to empty folders", required = false)
+    private boolean keepFolders;
 
     // receives other command line parameters than options
     @Argument
@@ -160,37 +166,59 @@ public class FileRecorder {
             }
 
             Status status = git.status().call();
+
+            //Grab the list of changes
+            Set<String> untrackedFiles = status.getUntracked();
+            Set<String> untrackedFolders = status.getUntrackedFolders();
+            Set<String> modifiedFiles = status.getModified();
+            Set<String> missingFiles = status.getMissing();
+            ArrayList newFolders = new ArrayList();
+
             //Files modified
-            for (String modified : status.getModified()) {
-                logger.info("Modified file: " + modified);
+            for (String modified : modifiedFiles) {
+                logger.info("Modified file: " + monitorPath + File.separator + modified);
                 AddCommand add = git.add();
                 add.addFilepattern(modified).call();
-                commitMessage += "Modified file: " + modified + "\n";
+                commitMessage += "Modified file: " + monitorPath + File.separator + modified + "\n";
             }
 
             //Files missing
-            for (String missing : status.getMissing()) {
-                logger.info("Missing file: " + missing);
+            for (String missing : missingFiles) {
+                logger.info("Missing file: " + monitorPath + File.separator + missing);
                 RmCommand remove = git.rm();
                 remove.addFilepattern(missing).call();
-                commitMessage += "Removing file: " + missing + "\n";
-            }
-
-            //New folders detected
-            //TODO - Is it emtpty? If it is add a .keep file to track it
-            for (String untrackedFolder : status.getUntrackedFolders()) {
-                logger.info("New folder found: " + untrackedFolder);
-                AddCommand add = git.add();
-                add.addFilepattern(untrackedFolder).call();
-                commitMessage += "New folder found: " + untrackedFolder + "\n";
+                commitMessage += "Removing file: " + monitorPath + File.separator + missing + "\n";
             }
 
             //New files detected
-            for (String untracked : status.getUntracked()) {
-                logger.info("New file found: " + untracked);
+            for (String untrackedFile : untrackedFiles) {
+                //Is this an untracked folder?
+                for (String untrackedFolder : untrackedFolders) {
+                    if (untrackedFile.contains(untrackedFolder)){
+                        logger.info("New folder found: " + monitorPath + File.separator + untrackedFolder);
+                        newFolders.add(untrackedFolder);
+                    }
+                }
+                logger.info("New file found: " + monitorPath + File.separator + untrackedFile);
                 AddCommand add = git.add();
-                add.addFilepattern(untracked).call();
-                commitMessage += "New file found: " + untracked + "\n";
+                add.addFilepattern(untrackedFile).call();
+                commitMessage += "New file found: " + monitorPath + File.separator + untrackedFile + "\n";
+            }
+
+            //Emtpy folders detected
+            for (String untrackedFolder : status.getUntrackedFolders()) {
+                //Did this folder contain a new file?
+                if (!newFolders.contains(untrackedFolder)) {
+                    logger.info("Empty folder found: " + monitorPath + File.separator + untrackedFolder);
+                    //Add .keep file to folder if option passed
+                    if(keepFolders){
+                        logger.info("Creating .keep file in folder: " + monitorPath + File.separator + untrackedFolder);
+                        Files.createFile(Paths.get(monitorPath + File.separator + untrackedFolder + File.separator + ".keep"));
+                        AddCommand add = git.add();
+                        add.addFilepattern(untrackedFolder).call();
+                        commitMessage += "New folder found: " + monitorPath + File.separator + untrackedFolder + "\n";
+                    }
+                }
             }
 
             //Commit all changes
