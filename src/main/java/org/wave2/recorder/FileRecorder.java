@@ -32,8 +32,11 @@ package org.wave2.recorder;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import org.eclipse.jgit.api.*;
+import org.eclipse.jgit.archive.ArchiveFormats;
+import org.eclipse.jgit.archive.ZipFormat;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
@@ -42,14 +45,11 @@ import org.kohsuke.args4j.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 public class FileRecorder {
@@ -77,6 +77,9 @@ public class FileRecorder {
     private final Properties properties = new Properties();
     private String commitMessage = "";
 
+    //Git repo object
+    Git git;
+
     /**
      * Load application properties
      */
@@ -88,12 +91,36 @@ public class FileRecorder {
         }
     }
 
+    private void loadRepo(){
+        try {
+            FileRepositoryBuilder builder = new FileRepositoryBuilder();
+            Repository repository = builder.setWorkTree(new File(monitorPath)).setGitDir(new File(repositoryPath, ".git")).build();
+            git = new Git(repository);
+            StoredConfig config = repository.getConfig();
+
+            //Is this a fileRecorder repository?
+            if (!config.getBoolean("fileRecorder", "enabled", false)) {
+                //There is no config here, lets try to create a new repo
+                try {
+                    repository.create();
+                } catch (IllegalStateException e) {
+                    System.err.println("Repository - " + repositoryPath + " is not a fileRecorder enabled repository.\n\nPlease provide a valid path.");
+                    System.exit(1);
+                }
+                config.setBoolean("fileRecorder", null, "enabled", true);
+                config.save();
+            }
+        } catch(Exception e){
+            logger.error(e.getClass().toString() + " - " + e.getMessage());
+            System.exit(1);
+        }
+    }
+
     /**
      * Default constructor for File Recorder
      */
     private FileRecorder() {
         loadProperties();
-
     }
 
     public static void main(String[] args) throws IOException {
@@ -133,13 +160,28 @@ public class FileRecorder {
             rootLogger.setLevel(Level.DEBUG);
         }
 
+        //Load / Create the Git Repository
+        loadRepo();
+
         // access non-option arguments
-        for (String s : arguments) {
+        if (!arguments.isEmpty()) {
             //Record changes
-            if (s.equalsIgnoreCase("record")) {
+            if (arguments.get(0).equalsIgnoreCase("record")) {
                 record();
             }
+            //Rewind changes
+            if (arguments.get(0).equalsIgnoreCase("rewind")) {
+                if (arguments.size() == 2) {
+                    //Do we have a commitID?
+                    rewind(arguments.get(1));
+                }else {
+                    rewind();
+                }
+            }
         }
+
+
+
 
     }
 
@@ -147,23 +189,7 @@ public class FileRecorder {
         //Check the repository
         logger.info("Looking for changes in " + monitorPath);
         try {
-            FileRepositoryBuilder builder = new FileRepositoryBuilder();
-            Repository repository = builder.setWorkTree(new File(monitorPath)).setGitDir(new File(repositoryPath, ".git")).build();
-            Git git = new Git(repository);
-            StoredConfig config = repository.getConfig();
 
-            //Is this a fileRecorder repository?
-            if (!config.getBoolean("fileRecorder", "enabled", false)) {
-                //There is no config here, lets try to create a new repo
-                try {
-                    repository.create();
-                } catch (IllegalStateException e) {
-                    System.err.println("Repository - " + repositoryPath + " is not a fileRecorder enabled repository.\n\nPlease provide a valid path.");
-                    System.exit(1);
-                }
-                config.setBoolean("fileRecorder", null, "enabled", true);
-                config.save();
-            }
 
             Status status = git.status().call();
 
@@ -230,6 +256,39 @@ public class FileRecorder {
             logger.info("FileRecorder Finished");
         } catch (Exception e) {
             logger.error(e.getClass().toString() + " - " + e.getMessage());
+            System.exit(1);
+        }
+    }
+
+    private void rewind (){
+        try {
+            Console cons;
+            Iterable<RevCommit> logs = git.log().setMaxCount(5).all().call();
+            for (RevCommit rev : logs) {
+                String commitTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date((long) rev.getCommitTime() * 1000));
+                if ((cons = System.console()) != null) {
+                    String[] messageLines = rev.getFullMessage().split("\n");
+                    for (String line : messageLines) {
+                        cons.printf("[" + rev.getName().substring(0,7) + "] " + commitTime + " " + line + "\n");
+                    }
+                    }
+                }
+        } catch (Exception e){
+            logger.error(e.getClass().toString() + " - " + e.getMessage());
+            System.exit(1);
+        }
+    }
+
+    private void rewind(String commitID){
+        ArchiveCommand.registerFormat("zip", new ZipFormat());
+        try {
+            OutputStream out = new FileOutputStream("test.zip");
+            git.archive().setTree(git.getRepository().resolve(commitID)).setFormat("zip").setOutputStream(out).call();
+        }catch (Exception e){
+            logger.error(e.getClass().toString() + " - " + e.getMessage());
+            System.exit(1);
+        } finally {
+            ArchiveCommand.unregisterFormat("zip");
         }
     }
 }
