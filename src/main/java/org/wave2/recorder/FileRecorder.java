@@ -88,6 +88,7 @@ public class FileRecorder {
             properties.load(getClass().getResourceAsStream("/application.properties"));
         } catch (IOException e) {
             System.err.println(e.getMessage());
+            System.exit(1);
         }
     }
 
@@ -141,48 +142,47 @@ public class FileRecorder {
             // you can parse additional arguments if you want.
             // parser.parseArgument("more","args");
 
+            if( debugEnabled ) {
+                LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+                ch.qos.logback.classic.Logger rootLogger = lc.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+                rootLogger.setLevel(Level.DEBUG);
+            }
+
+            //Load / Create the Git Repository
+            loadRepo();
+
+            // access non-option arguments
+            if (!arguments.isEmpty()) {
+                //Record changes
+                if (arguments.get(0).equalsIgnoreCase("record")) {
+                    record();
+                }
+                //Rewind changes
+                if (arguments.get(0).equalsIgnoreCase("rewind")) {
+                    if (arguments.size() == 2) {
+                        //Do we have a commitID?
+                        rewind(arguments.get(1));
+                    }else {
+                        rewind();
+                    }
+                }
+            }else{
+                throw new CmdLineException("You forgot to press the record/rewind button!");
+            }
+
         } catch (CmdLineException e) {
             // if there's a problem in the command line,
             // you'll get this exception. this will report
             // an error message.
             System.err.println(e.getMessage() + "\n");
-            System.err.println("FileRecorder - lazy version control for your stuff! Version " + properties.getProperty("application.version"));
-            System.err.println("Usage: java -jar fileRecorder.jar -f PATH -r PATH [record]");
+            System.err.println("FileRecorder - lazy version control for your stuff!");
+            System.err.println("Version " + properties.getProperty("application.version"));
+            System.err.println();
+            System.err.println("Usage: java -jar fileRecorder-v" + properties.getProperty("application.version") + ".jar -f MONITOR_PATH -r REPO_PATH [record/rewind]");
             // print the list of available options
             parser.printUsage(System.err);
-            System.err.println();
-            return;
+            System.exit(0);
         }
-
-        if( debugEnabled ) {
-            LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
-            ch.qos.logback.classic.Logger rootLogger = lc.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
-            rootLogger.setLevel(Level.DEBUG);
-        }
-
-        //Load / Create the Git Repository
-        loadRepo();
-
-        // access non-option arguments
-        if (!arguments.isEmpty()) {
-            //Record changes
-            if (arguments.get(0).equalsIgnoreCase("record")) {
-                record();
-            }
-            //Rewind changes
-            if (arguments.get(0).equalsIgnoreCase("rewind")) {
-                if (arguments.size() == 2) {
-                    //Do we have a commitID?
-                    rewind(arguments.get(1));
-                }else {
-                    rewind();
-                }
-            }
-        }
-
-
-
-
     }
 
     private void record() {

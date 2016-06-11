@@ -1,9 +1,8 @@
-fileRecorder
-============
+[![Build Status](https://travis-ci.org/wave2/filerecorder.svg?branch=master)](https://travis-ci.org/wave2/filerecorder)
+# fileRecorder
 ![alt fileRecorder Logo](https://raw.githubusercontent.com/wave2/filerecorder/gh-pages/images/fileRecorderLogo.jpg)
 
-Introduction
-------------
+## Introduction
 fileRecorder is a simple wrapper over [GIT](https://git-scm.com/) to allow you to track changes to a folder.
 
 You provide 2 folders:
@@ -11,20 +10,36 @@ You provide 2 folders:
 1. A folder to monitor
 2. A folder to record the changes (git repo)
 
-Each time you run the app the recorder will compare your folder with the repo and commit any changes it detects - simple eh!
+Each time you run the app, the recorder will compare your folder with the repo, and commit any changes it detects - how lazy is that?!
 
-Requirements
-------------
- * Java 1.8+
+## Requirements
+ * Java 1.8+ *(Stay current for your own sake)*
 
-Usage
------
+## Usage
+### Recording
+Pretty simple really...or you'd be using Git right?
 ```bash
-$ java -jar fileRecorder.jar -f PATH -r PATH record
+$ java -jar fileRecorder-v0.0.0.jar -f PATH -r PATH record
 ```
+### Rewinding
+Too lazy to use Git? ;)
 
-License
--------
+Alright, well just run the following commands to get a Zip file containing your files (hope it's not massive!).
+
+You'll have to restore them yourself  after that, hmmm that sounds like a feature request.
+ 1. Get a list of the changes and make a note of the commit ID you want to get
+
+    ```bash
+    $ java -jar fileRecorder.v0.0.0.jar -f MONITOR_PATH -r REPO_PATH rewind
+    ```
+    *Hint: it looks like this - 5bdc5da*
+ 2. Create a Zip file containing a point in time snapshot of the specified commit ID.
+
+    ```bash
+    $ java -jar fileRecorder.v0.0.0.jar -f MONITOR_PATH -r REPO_PATH rewind [commitID]
+    ```
+
+## License
 Copyright (c) 2016 Wave2 Limited
 All rights reserved.
 
