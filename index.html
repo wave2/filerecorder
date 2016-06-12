@@ -2,43 +2,120 @@
 <html lang="en-us">
   <head>
     <meta charset="UTF-8">
-    <title>filerecorder by wave2</title>
+    <title>fileRecorder by wave2</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-    <script>
-      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-      ga('create', 'UA-26752917-5', 'auto');
-      ga('send', 'pageview');
-
-    </script>
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name">filerecorder</h1>
-      <h2 class="project-tagline">I need a tagline</h2>
+      <h1 class="project-name">fileRecorder</h1>
+      <h2 class="project-tagline">Lazy version control for your stuff!</h2>
       <a href="https://github.com/wave2/filerecorder" class="btn">View on GitHub</a>
       <a href="https://github.com/wave2/filerecorder/zipball/master" class="btn">Download .zip</a>
       <a href="https://github.com/wave2/filerecorder/tarball/master" class="btn">Download .tar.gz</a>
     </section>
 
     <section class="main-content">
-      <h1>
-<a id="filerecorder" class="anchor" href="#filerecorder" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>FileRecorder</h1>
+      <p><a href="https://github.com/wave2/filerecorder/releases/download/v0.1.12/fileRecorder-v0.1.12.jar"><img src="https://img.shields.io/badge/download-v0.1.12-blue.svg" alt="alt Download Latest Release"></a> <a href="https://raw.githubusercontent.com/wave2/filerecorder/master/LICENSE"><img src="https://img.shields.io/badge/license-BSD-blue.svg" alt="GitHub license"></a> <a href="https://travis-ci.org/wave2/filerecorder"><img src="https://travis-ci.org/wave2/filerecorder.svg?branch=master" alt="Build Status"></a> <a href="https://github.com/wave2/filerecorder/issues"><img src="https://img.shields.io/github/issues/wave2/filerecorder.svg" alt="GitHub issues"></a></p>
+
+<h1>
+<a id="filerecorder" class="anchor" href="#filerecorder" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>fileRecorder</h1>
+
+<p><img src="https://raw.githubusercontent.com/wave2/filerecorder/gh-pages/images/fileRecorderLogo.jpg" alt="alt fileRecorder Logo"></p>
 
 <h2>
 <a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Introduction</h2>
 
-<p>File Recorder is a simple wrapper over GIT to allow you to track changes to a folder.</p>
+<p>fileRecorder is a simple wrapper over <a href="https://git-scm.com/">GIT</a> to allow you to track changes to a folder.</p>
+
+<p>You provide 2 folders:</p>
+
+<ol>
+<li>A folder to monitor</li>
+<li>A folder to record the changes (git repo)</li>
+</ol>
+
+<p>Each time you run the app, the recorder will compare your folder with the repo, and commit any changes it detects - how lazy is that?!</p>
+
+<h2>
+<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Requirements</h2>
+
+<ul>
+<li>Java 1.8+ <em>(Stay current for your own sake)</em>
+</li>
+</ul>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
+
+<h3>
+<a id="recording" class="anchor" href="#recording" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Recording</h3>
+
+<p>Pretty simple really...or you'd be using Git right?</p>
+
+<div class="highlight highlight-source-shell"><pre>$ java -jar fileRecorder-v0.1.12.jar -f PATH -r PATH record</pre></div>
+
+<h3>
+<a id="rewinding" class="anchor" href="#rewinding" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Rewinding</h3>
+
+<p>Too lazy to use Git? ;)</p>
+
+<p>Alright, well just run the following commands to get a Zip file containing your files (hope it's not massive!).</p>
+
+<ol>
+<li>
+<p>Get a list of the changes and make a note of the commit ID you want to get</p>
+
+<div class="highlight highlight-source-shell"><pre>$ java -jar fileRecorder.v0.1.12.jar -f MONITOR_PATH -r REPO_PATH rewind</pre></div>
+
+<p><em>Hint: it looks like this - 5bdc5da</em></p>
+</li>
+<li>
+<p>Create a Zip file containing a point in time snapshot of the specified commit ID.</p>
+
+<div class="highlight highlight-source-shell"><pre>$ java -jar fileRecorder.v0.1.12.jar -f MONITOR_PATH -r REPO_PATH rewind [commitID]</pre></div>
+</li>
+</ol>
+
+<p>You'll have to restore them yourself after that, hmmm that sounds like a feature request.</p>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h2>
+
+<p>Copyright (c) 2016 Wave2 Limited
+All rights reserved.</p>
+
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
+
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
+
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
+
+<p>The views and conclusions contained in the software and documentation are those
+of the authors and should not be interpreted as representing official policies,
+either expressed or implied, of Wave2 Limited.</p>
 
       <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/wave2/filerecorder">filerecorder</a> is maintained by <a href="https://github.com/wave2">wave2</a>.</span>
+        <span class="site-footer-owner"><a href="https://github.com/wave2/filerecorder">fileRecorder</a> is maintained by <a href="https://github.com/wave2">wave2</a>.</span>
 
         <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
