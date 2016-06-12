@@ -41,9 +41,16 @@ jar {
     }
 }
 
+task updateReadmeVersion << {
+    ant.replaceregexp(match:'v\\d\\.\\d\\.\\d', replace:'v' + version, flags:'g', byline:true) {
+        fileset(dir: project.projectDir, includes: 'README.md')
+    }
+}
+
 shadowJar {
     doFirst {clean}
     dependsOn {build}
+    dependsOn (updateReadmeVersion)
     archiveName = 'fileRecorder-v' + version + '.jar'
 }
 

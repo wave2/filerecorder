@@ -19,25 +19,26 @@ Each time you run the app, the recorder will compare your folder with the repo, 
 ### Recording
 Pretty simple really...or you'd be using Git right?
 ```bash
-$ java -jar fileRecorder-v0.0.0.jar -f PATH -r PATH record
+$ java -jar fileRecorder-v0.1.111.jar -f PATH -r PATH record
 ```
 ### Rewinding
 Too lazy to use Git? ;)
 
 Alright, well just run the following commands to get a Zip file containing your files (hope it's not massive!).
 
-You'll have to restore them yourself  after that, hmmm that sounds like a feature request.
  1. Get a list of the changes and make a note of the commit ID you want to get
 
     ```bash
-    $ java -jar fileRecorder.v0.0.0.jar -f MONITOR_PATH -r REPO_PATH rewind
+    $ java -jar fileRecorder.v0.1.111.jar -f MONITOR_PATH -r REPO_PATH rewind
     ```
     *Hint: it looks like this - 5bdc5da*
  2. Create a Zip file containing a point in time snapshot of the specified commit ID.
 
     ```bash
-    $ java -jar fileRecorder.v0.0.0.jar -f MONITOR_PATH -r REPO_PATH rewind [commitID]
+    $ java -jar fileRecorder.v0.1.111.jar -f MONITOR_PATH -r REPO_PATH rewind [commitID]
     ```
+
+You'll have to restore them yourself after that, hmmm that sounds like a feature request.
 
 ## License
 Copyright (c) 2016 Wave2 Limited
