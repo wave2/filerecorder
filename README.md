@@ -1,4 +1,4 @@
-## IMPORTANT: Archived due to inactivity - no longer supported
+<h1 style="color:blue">IMPORTANT: Archived due to inactivity - no longer supported</h1>
 
 [![alt Download Latest Release](https://img.shields.io/badge/download-v0.1.12-blue.svg)](https://github.com/wave2/filerecorder/releases/download/v0.1.12/fileRecorder-v0.1.12.jar) [![GitHub license](https://img.shields.io/badge/license-BSD-blue.svg)](https://raw.githubusercontent.com/wave2/filerecorder/master/LICENSE) [![Build Status](https://travis-ci.org/wave2/filerecorder.svg?branch=master)](https://travis-ci.org/wave2/filerecorder) [![GitHub issues](https://img.shields.io/github/issues/wave2/filerecorder.svg)](https://github.com/wave2/filerecorder/issues)
 # fileRecorder
